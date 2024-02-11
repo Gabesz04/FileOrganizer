@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -14,15 +15,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	listElements(files)
-	makeDir(files)
+	ListElements(files)
+	MakeDir(files)
 }
 
-func makeDir(f []fs.DirEntry) {
-	stringEnd := ""
+func MakeDir(f []fs.DirEntry) {
 	for _, file := range f {
-		stringEnd = file.Name()[len(file.Name())-3:]
-		if stringEnd == "pdf" {
+		if GetXLastElements(3, file) == "pdf" {
 			HasDir(file, f)
 		}
 	}
@@ -30,29 +29,45 @@ func makeDir(f []fs.DirEntry) {
 
 func HasDir(file fs.DirEntry, files []fs.DirEntry) {
 	for _, f := range files {
-		if GetXFirstElements(8, f) == GetXFirstElements(8, file) && f.IsDir() == false {
-			fmt.Println("OTTVAGYUNK")
+		if GetXFirstElements(8, file) == GetXFirstElements(8, f) && file.IsDir() == false && file.IsDir() == true {
+			fmt.Println("asd")
+			err := os.Mkdir("../"+GetXFirstElements(8, f), 0755)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			MoveFile(f, GetXFirstElements(8, f))
 		}
 	}
 }
 
-func GetXFirstElements(n int, f fs.DirEntry) string {
-	if len(f.Name()) > n {
-		return f.Name()[0:n]
-	} else {
-		return ""
+func MoveFile(what fs.DirEntry, where string) {
+	sourcePath, err := os.Getwd()
+	parentPath := filepath.Dir(sourcePath)
+	if err != nil {
+		log.Fatal(err)
 	}
+	fmt.Print(parentPath)
+	//err := os.Mkdir(GetXFirstElements(), 0755)
 }
 
-func GetXLastElements(n int, f fs.DirEntry) string {
+func GetXFirstElements(n int, f fs.DirEntry) (value string) {
+	value = ""
 	if len(f.Name()) > n {
-		return f.Name()[len(f.Name())-n:]
-	} else {
-		return ""
+		value = f.Name()[0:n]
 	}
+	return
 }
 
-func listElements(f []fs.DirEntry) {
+func GetXLastElements(n int, f fs.DirEntry) (value string) {
+	value = ""
+	if len(f.Name()) > n {
+		value = f.Name()[len(f.Name())-n:]
+	}
+	return
+}
+
+func ListElements(f []fs.DirEntry) {
 	for _, file := range f {
 		fmt.Println(file.Name(), file.IsDir())
 	}
