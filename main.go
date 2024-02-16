@@ -29,7 +29,7 @@ func MakeDir(f []fs.DirEntry) {
 
 func HasDir(file fs.DirEntry, files []fs.DirEntry) {
 	for _, f := range files {
-		if GetXFirstElements(8, file) == GetXFirstElements(8, f) && file.IsDir() == false && file.IsDir() == true {
+		if GetXFirstElements(8, file) == GetXFirstElements(8, f) && f.IsDir() == false && file.IsDir() == true {
 			fmt.Println("asd")
 			err := os.Mkdir("../"+GetXFirstElements(8, f), 0755)
 			if err != nil {
@@ -43,10 +43,11 @@ func HasDir(file fs.DirEntry, files []fs.DirEntry) {
 
 func MoveFile(what fs.DirEntry, where string) {
 	sourcePath, err := os.Getwd()
-	parentPath := filepath.Dir(sourcePath)
+
 	if err != nil {
 		log.Fatal(err)
 	}
+	parentPath := filepath.Dir(sourcePath)
 	fmt.Print(parentPath)
 	//err := os.Mkdir(GetXFirstElements(), 0755)
 }
