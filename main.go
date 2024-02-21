@@ -11,23 +11,23 @@ import (
 )
 
 func main() {
-	files, err := os.ReadDir("../")
-	//var path = "/test/"
-	if err != nil {
-		log.Fatal(err)
-	}
-	utils.DirString = GetDirNames(files)
-	ListElements(files)
-	MakeDir(files)
+	utils.DirString = GetDirNames(GetFiles())
+
+	MakeDir(GetFiles())
 }
 
 func MakeDir(f []fs.DirEntry) {
 	for _, file := range f {
-		if GetXLastElements(3, file) == utils.FileExtension {
+		if GetXLastElements(3, file.Name()) == utils.FileExtension {
 			if HasDir(file) {
-				MoveFile()
+				MoveFile(file)
 			} else {
-				MakeDir()
+				err := os.Mkdir(GetXFirstElements(utils.CharacterCount, file.Name()), 0755)
+				if err != nil {
+					log.Fatal(err)
+				}
+				utils.DirString = GetDirNames(GetFiles())
+
 			}
 
 		}
@@ -35,7 +35,7 @@ func MakeDir(f []fs.DirEntry) {
 }
 
 func HasDir(file fs.DirEntry) (values bool) {
-	if strings.Contains(utils.DirString, GetXFirstElements(8, file)) {
+	if strings.Contains(utils.DirString, GetXFirstElements(8, file.Name())) {
 		return true
 	}
 	return false
@@ -49,10 +49,13 @@ func MoveFile(what fs.DirEntry, where string) {
 	}
 	parentPath := filepath.Dir(sourcePath)
 	fmt.Print(parentPath)
-	//err := os.Mkdir(GetXFirstElements(), 0755)
 }
 
 func GetDirNames(files []fs.DirEntry) (value string) {
+	files, err := os.ReadDir("../")
+	if err != nil {
+		log.Fatal(err)
+	}
 	for _, file := range files {
 		if file.IsDir() {
 			value += file.Name()
@@ -61,18 +64,25 @@ func GetDirNames(files []fs.DirEntry) (value string) {
 	return
 }
 
-func GetXFirstElements(n int, f fs.DirEntry) (value string) {
-	value = ""
-	if len(f.Name()) > n {
-		value = f.Name()[0:n]
+func GetFiles() (value []fs.DirEntry) {
+	files, err := os.ReadDir("../")
+	//var path = "/test/"
+	if err != nil {
+		log.Fatal(err)
 	}
-	return
+	return files
 }
 
-func GetXLastElements(n int, f fs.DirEntry) (value string) {
-	value = ""
-	if len(f.Name()) > n {
-		value = f.Name()[len(f.Name())-n:]
+func GetXFirstElements(n int, f string) (value string) {
+	if len(f) > n {
+		value = f[0:n]
+	}
+	return value
+}
+
+func GetXLastElements(n int, f string) (value string) {
+	if len(f) > n {
+		value = f[len(f)-n:]
 	}
 	return
 }
