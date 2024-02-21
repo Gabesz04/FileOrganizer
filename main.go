@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	utils.DirString = GetDirNames(files)
 	ListElements(files)
 	MakeDir(files)
 }
@@ -50,6 +50,15 @@ func MoveFile(what fs.DirEntry, where string) {
 	parentPath := filepath.Dir(sourcePath)
 	fmt.Print(parentPath)
 	//err := os.Mkdir(GetXFirstElements(), 0755)
+}
+
+func GetDirNames(files []fs.DirEntry) (value string) {
+	for _, file := range files {
+		if file.IsDir() {
+			value += file.Name()
+		}
+	}
+	return
 }
 
 func GetXFirstElements(n int, f fs.DirEntry) (value string) {
