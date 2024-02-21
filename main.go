@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"main/utils"
 	"os"
 	"path/filepath"
 )
@@ -21,7 +22,7 @@ func main() {
 
 func MakeDir(f []fs.DirEntry) {
 	for _, file := range f {
-		if GetXLastElements(3, file) == "pdf" {
+		if GetXLastElements(3, file) == utils.FileExtension {
 			HasDir(file, f)
 		}
 	}
@@ -29,14 +30,13 @@ func MakeDir(f []fs.DirEntry) {
 
 func HasDir(file fs.DirEntry, files []fs.DirEntry) {
 	for _, f := range files {
-		if GetXFirstElements(8, file) == GetXFirstElements(8, f) && f.IsDir() == false && file.IsDir() == true {
-			fmt.Println("asd")
-			err := os.Mkdir("../"+GetXFirstElements(8, f), 0755)
+		if GetXFirstElements(utils.CharacterCount, file) == GetXFirstElements(utils.CharacterCount, f) && !f.IsDir() && file.IsDir() {
+			err := os.Mkdir("../"+GetXFirstElements(utils.CharacterCount, f), 0755)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			MoveFile(f, GetXFirstElements(8, f))
+			MoveFile(f, GetXFirstElements(utils.CharacterCount, f))
 		}
 	}
 }
