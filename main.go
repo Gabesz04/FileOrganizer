@@ -12,6 +12,11 @@ import (
 
 func main() {
 	utils.DirString = GetDirNames(GetFiles())
+	sourcePath, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	utils.SourcePath = sourcePath
 
 	MakeDir(GetFiles())
 }
@@ -22,7 +27,7 @@ func MakeDir(f []fs.DirEntry) {
 			if HasDir(file) {
 				MoveFile(file)
 			} else {
-				err := os.Mkdir(GetXFirstElements(utils.CharacterCount, file.Name()), 0755)
+				err := os.MkdirAll(GetXFirstElements(utils.CharacterCount, file.Name()), 0755)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -35,27 +40,22 @@ func MakeDir(f []fs.DirEntry) {
 }
 
 func HasDir(file fs.DirEntry) (values bool) {
-	if strings.Contains(utils.DirString, GetXFirstElements(8, file.Name())) {
-		return true
-	}
-	return false
+	return strings.Contains(utils.DirString, GetXFirstElements(8, file.Name()))
 }
 
-func MoveFile(what fs.DirEntry, where string) {
-	sourcePath, err := os.Getwd()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	parentPath := filepath.Dir(sourcePath)
+func MoveFile(fileName fs.DirEntry) {
+	parentPath := filepath.Dir(utils.SourcePath)
 	fmt.Print(parentPath)
+
+	GetRightDir(fileName)
+	//err = os.Rename(fileName.Name(), GetRightDir(fileName))
+}
+
+func GetRightDir(fileName fs.DirEntry) {
+	fmt.Print(fileName.Info())
 }
 
 func GetDirNames(files []fs.DirEntry) (value string) {
-	files, err := os.ReadDir("../")
-	if err != nil {
-		log.Fatal(err)
-	}
 	for _, file := range files {
 		if file.IsDir() {
 			value += file.Name()
