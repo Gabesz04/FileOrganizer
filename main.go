@@ -27,7 +27,7 @@ func MakeDir(f []fs.DirEntry) {
 			if HasDir(file) {
 				MoveFile(file)
 			} else {
-				err := os.MkdirAll(GetXFirstElements(utils.CharacterCount, file.Name()), 0755)
+				err := os.MkdirAll("../"+GetXFirstElements(utils.CharacterCount, file.Name()), 0777)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -47,8 +47,11 @@ func MoveFile(fileName fs.DirEntry) {
 	parentPath := filepath.Dir(utils.SourcePath)
 	fmt.Print(parentPath)
 
-	GetRightDir(fileName)
-	//err = os.Rename(fileName.Name(), GetRightDir(fileName))
+	//GetRightDir(fileName)
+	err := os.Rename(parentPath+"\\"+fileName.Name(), parentPath+"\\"+GetXFirstElements(utils.CharacterCount, fileName.Name()))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func GetRightDir(fileName fs.DirEntry) {
